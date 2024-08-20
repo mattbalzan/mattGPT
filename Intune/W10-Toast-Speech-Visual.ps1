@@ -7,7 +7,7 @@ Add-Type -AssemblyName System.speech
 
 
 # --[ Customise your title/message ]
-$title    = "CONTOSO EVIL CORP"
+$title    = "EVIL CORP"
 $message  = "Don't bother rebooting your device. We're firing you."
 
 # --[ Setup Toast message ]
@@ -55,4 +55,4 @@ $Toast.Activated.add({
 $notify.Show($toast)
 
 # --[ Covering all bases, we can also play the message for Accessibility scenarios ]
-([System.Speech.Synthesis.SpeechSynthesizer]::New()).Speak("Attention! Message from EVIL CORP, Don't bother rebooting your device, we're firing you.")
+([System.Speech.Synthesis.SpeechSynthesizer]::New()).Speak("Attention! Message from $title, Don't bother rebooting your device, we're firing you.")
