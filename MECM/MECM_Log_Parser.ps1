@@ -5,17 +5,14 @@
 
     Description:    1. Locates only filtered logs (add as many as you need but follow the regex pattern).
                     2. Imports all the content based on search patterns.
-                    3. Parses the log data.
+                    3. Parses the log data. 
                     4. Displays the content in date time order. 
-
-    Notes:          Version 1.0 - Original
 
 #>
 
-$ErrorActionPreference = "SILENTLYCONTINUE"
 
 # --[ Set search patterns ]
-$filters  =  "0x87D00324" #,"0x80070002"
+$filters  = "VPN Profile" # "0x87D00324" , "Windows 11, version 22H2 x64 2023-10B"
 
 
 # --[ Set log regex patterns ]
@@ -26,7 +23,7 @@ $compPattern = 'component="(.*?)"'
 
 
 # --[ Filter for log files beginning with their start names ]
-$LogFilters = "^Update | ^App"
+$LogFilters = "^Update|^WUA|^CAS|^App"
 
 
 # --[ External log file path | change to C:\Windows\CCM\Logs on live machine ]
@@ -38,15 +35,26 @@ $LogFiles = $Logs | Where-Object { $_.Name -match $LogFilters }
 
 
 # --[ Grab all the filtered content ]
-$content = ""
 $content = 
 
 foreach ($log in $LogFiles){
 
 Write-Host "Searching $($log.Name)"
 
-if($filters -eq ""){ Get-Content -Path $log.FullName }
-else{ Get-Content -Path $log.FullName | Select-String -Pattern $filters }
+
+        if($filters){
+        
+        # --[ Read the current log and filter lines that match the pattern ]
+        Get-Content -Path $log.FullName | Select-String -Pattern $filters
+        
+        }
+        else{
+        
+        # --[ OK! no filters, so read the entire log ]
+        Get-Content -Path $log.FullName
+        
+        }
+
 
 }
 
