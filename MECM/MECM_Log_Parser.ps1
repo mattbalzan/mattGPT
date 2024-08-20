@@ -5,8 +5,8 @@
 
     Description:    1. Locates only filtered logs (add as many as you need but follow the regex pattern).
                     2. Imports all the content based on search patterns.
-                    3. Parses the log data 
-                    4. Displays the content. 
+                    3. Parses the log data.
+                    4. Displays the content in date time order. 
 
     Notes:          Version 1.0 - Original
 
