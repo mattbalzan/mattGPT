@@ -3,7 +3,7 @@
     Windows Icons | Extract icons from common DLLs/EXEs and generate an HTML gallery.
 
 .DESCRIPTION
-    - Extracts icons from multiple Windows DLLs (e.g. shell32.dll, imageres.dll, ddores.dll, moricons.dll).
+    - Extracts icons from multiple Windows DLLs (e.g. shell32.dll, imageres.dll, ddores.dll, setupapi.dll).
     - Saves icons into DLL-specific subfolders under C:\ExtractedIcons.
     - Automatically generates an HTML gallery with sectioned icon previews per DLL.
     - Clicking an icon updates a PowerShell shortcut creation example with the correct DLL path + icon index.
@@ -156,3 +156,4 @@ function copyExample() {
 
 $html | Out-File -FilePath $outputHtml -Encoding UTF8
 Invoke-Item $outputHtml
+
