@@ -27,7 +27,8 @@ $dllSources = @(
     "$env:SystemRoot\System32\setupapi.dll",
     "$env:SystemRoot\System32\stobject.dll",
     "$env:SystemRoot\System32\mshtml.dll",
-    "$env:SystemRoot\System32\Taskmgr.exe"
+    "$env:SystemRoot\System32\Taskmgr.exe",
+    "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 )
 
 $baseFolder = "C:\ExtractedIcons"
@@ -156,4 +157,5 @@ function copyExample() {
 
 $html | Out-File -FilePath $outputHtml -Encoding UTF8
 Invoke-Item $outputHtml
+
 
