@@ -1,4 +1,3 @@
-﻿```{"variant":"standard","title":"Synopsis comment block for 'Search Intune Config Policies' script","id":"10452"}
 <#
 .SYNOPSIS
     Searches Intune configuration policies for a specified keyword within the policy JSON body.
@@ -25,6 +24,7 @@
     Graph Endpoint: https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations
 
 #>
+
 
 # --[ Customise your search keyword ]
 $SearchValue = "firewall"
