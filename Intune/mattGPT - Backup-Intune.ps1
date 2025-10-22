@@ -61,7 +61,7 @@ $blobDirectory = "$backupFolderName"
 
 
 
-# --[ *** local drive save test *** ]
+# --[ *** Edit this path to save to local drive *** ]
 $localBlobDir = "C:\temp\IntuneBackup-$timestamp"
 if (!(Test-Path $localBlobDir -ErrorAction Ignore)) { New-Item $localBlobDir -ItemType Directory -Force }
 
@@ -382,7 +382,7 @@ if ($W365anc.value.id) {
     }   
 }
 
-# ---[ Intune Backup Summary ASCII Table ]---
+# ---[ Intune Backup Summary ASCII Table ]
 # Generate dynamic title with timestamp
 $Title = "Intune Backup - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 
@@ -409,18 +409,18 @@ $BackupSummary = @(
     @{ Name = "Total Failed Backups"; Value = $failed }
 )
 
-# ---[ Calculate dynamic column widths ]---
+# ---[ Calculate dynamic column widths ]
 $NameWidth  = ($BackupSummary.Name | Measure-Object -Property Length -Maximum).Maximum + 2
 $ValueWidth = ($BackupSummary.Value | ForEach-Object { $_.ToString().Length } | Measure-Object -Maximum).Maximum + 2
 $TableWidth = $NameWidth + $ValueWidth + 5
 
-# ---[ Render ASCII table header ]---
+# ---[ Render ASCII table header ]
 Write-Host ""
 $TitlePadded = $Title.PadLeft(($TableWidth + $Title.Length) / 2).PadRight($TableWidth)
 Write-Host $TitlePadded -ForegroundColor Black -BackgroundColor Red
 Write-Host ("{0,-$NameWidth}{1,$ValueWidth}" -f "Category", "Count") -ForegroundColor Gray
 
-# ---[ Render each row with color formatting ]---
+# ---[ Render each row with color formatting ]
 foreach ($Item in $BackupSummary) {
     if ($Item.Name -eq "Total Failed Backups") {
         Write-Host ("{0,-$NameWidth}" -f $Item.Name) -ForegroundColor Black -BackgroundColor Gray -NoNewline
@@ -470,6 +470,5 @@ if ($backupFolders.Count -gt 30) {
 }
 
 Write-Host "Backup cleanup complete."
-
 
 # --[ End of script ]
