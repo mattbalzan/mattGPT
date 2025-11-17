@@ -17,21 +17,24 @@
 #>
 
 # ======= CONFIGURATION =======
-$TenantId     = "<TenantID>"
-$ClientId     = "<ClientID>"
-$ClientSecret = "<ClientSecret>"
 $GroupName    = "Windows 10 Devices"  # edit your Entra ID Group here
 
-# ======= TOKEN RETRIEVAL =======
+# ===== GET ACCESS TOKEN =====
+$TenantId     = ""
+$ClientId     = ""
+$ClientSecret = ""
+
+$TokenUri = "https://login.microsoftonline.com/$TenantId/oauth2/v2.0/token"
 $Body = @{
-    grant_type    = "client_credentials"
-    scope         = "https://graph.microsoft.com/.default"
     client_id     = $ClientId
     client_secret = $ClientSecret
+    scope         = "https://graph.microsoft.com/.default"
+    grant_type    = "client_credentials"
 }
 
-$TokenResponse = Invoke-RestMethod -Uri "https://login.microsoftonline.com/$TenantId/oauth2/v2.0/token" -Method POST -Body $Body
-$Headers = @{ Authorization = "Bearer $($TokenResponse.access_token)" }
+$TokenResponse = Invoke-RestMethod -Uri $TokenUri -Method POST -Body $Body
+$AccessToken   = $TokenResponse.access_token
+$Headers = @{ Authorization = "Bearer $AccessToken" }
 
 
 # ======= 1. GET GROUP ID =======
