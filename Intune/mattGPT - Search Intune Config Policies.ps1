@@ -6,6 +6,8 @@
     This script connects to Microsoft Graph using an Azure AD App Registration and retrieves all Intune device configuration policies.
     It searches the JSON body of each policy for a user-defined keyword (case-insensitive) and outputs matching key-value pairs along with policy metadata.
 
+    Graph Permissions: DeviceManagementConfiguration.Read.All
+
 .OUTPUTS
     A formatted table showing:
         - PolicyName
@@ -15,14 +17,11 @@
         - Type (policy type from Graph)
 
 .NOTES
-    Author: Matt Balzan
-    Website: mattGPT.co.uk
-    Date: 04/04/2025
-    Version: 1.0
-    Requires: Microsoft.Graph PowerShell SDK
-    Permissions: DeviceManagementConfiguration.Read.All (Application)
-    Graph Endpoint: https://graph.microsoft.com/beta/deviceManagement/deviceConfigurations
-
+    +------------+---------+---------+--------------------------------------------------------------------+
+    | Date       | Author  | Version | Changes                                                            |
+    |------------+---------+---------+--------------------------------------------------------------------|
+    | 2025-04-04 | mattGPT | 1.0     | Initial script.                                                    |
+    +------------+---------+---------+--------------------------------------------------------------------+
 #>
 
 
@@ -84,10 +83,9 @@ Write-Host $SearchValue -f Black -b Cyan
 $Results | Format-Table -AutoSize -Property * -Wrap
 }
 else { 
-
 Write-Host "$hits hits on keyword: " -f Yellow -b Black -NoNewline
 Write-Host $SearchValue -f Black -b Yellow
-
 }
 
 # --[ End of script ]
+
