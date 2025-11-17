@@ -11,19 +11,6 @@
     - Windows 365 components: Provisioning Policies, Azure Network Connections, and User Settings.
     - Automated cleanup of backups older than 30 days.
 
-.OUTPUTS
-    Backup folders containing exported JSON configurations for each Intune component.
-    Console output summarizing total items backed up and any failed operations.
-
-.NOTES
-    Author: Matt Balzan
-    Website: mattgpt.co.uk
-    Version History:
-    1.0 | 31.10.2024 | Original
-    1.1 | 01.11.2024 | Added Device Health & Management Scripts
-    1.2 | 09.12.2024 | Added Filters, W365 components, cleanup for >30 days
-    1.3 | 16.12.2024 | Added failed count, new API permission, fixed URLs, added filters
-
     Permissions Required:
         DeviceManagementServiceConfiguration.Read.All
         DeviceManagementConfiguration.Read.All
@@ -32,6 +19,16 @@
         CloudPC.Read.All
         Group.Read.All
 
+.OUTPUTS
+    Backup folders containing exported JSON configurations for each Intune component.
+    Console output summarizing total items backed up and any failed operations.
+
+.NOTES
+    +------------+---------+---------+--------------------------------------------------------------------+
+    | Date       | Author  | Version | Changes                                                            |
+    |------------+---------+---------+--------------------------------------------------------------------|
+    | 2024-10-31 | mattGPT | 1.0     | Initial script.                                                    |
+    +------------+---------+---------+--------------------------------------------------------------------+
 #>
 
 
@@ -472,3 +469,4 @@ if ($backupFolders.Count -gt 30) {
 Write-Host "Backup cleanup complete."
 
 # --[ End of script ]
+
