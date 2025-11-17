@@ -23,6 +23,9 @@
     |------------+---------+---------+--------------------------------------------------------------------|
     | 2025-11-14 | mattGPT | 1.0     | Initial script.                                                    |
     +------------+---------+---------+--------------------------------------------------------------------+
+    | 2025-11-17 | mattGPT | 1.1     | Pull all existing assignments, modify only the targets (add filter)|
+    |            |         |         | preserve original intent and settings, re-POST the full list.      |
+    +------------+---------+---------+--------------------------------------------------------------------+
 #>
 
 # ===== GET ACCESS TOKEN =====
@@ -89,75 +92,74 @@ $apps | select displayName # <<< this can be commented out after inspection.
 $report = @()
 $s = 0
 $f = 0
-ForEach($app in $apps){
 
-    # Set arrays
-    $Target = $null
-    $Settings = $null
-    $TargetHash = $null
-    $SettingsHash = $null
+foreach ($app in $apps) {
 
-    # Get App Assignments
     $AppID = $app.id
-    $AssignmentIDs = (Invoke-RestMethod -Method GET -Uri "https://graph.microsoft.com/beta/deviceAppManagement/MobileApps/$AppID/assignments" -Headers $Headers).value
+    $Assignments = (Invoke-RestMethod -Method GET -Uri "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/$AppID/assignments" -Headers $Headers).value
 
-    foreach($assignment in $AssignmentIDs){}
+    if (-not $Assignments) { continue }
 
-    # Set values to create hashtable
-    $Target = $assignment.target
-    $Settings = $assignment.settings
+    $UpdatedAssignments = @()
 
-    $Target.deviceAndAppManagementAssignmentFilterId = $FilterId
-    $Target.deviceAndAppManagementAssignmentFilterType = $FilterMode
+    foreach ($assignment in $Assignments) {
 
-    # Create target hashtable
-    $TargetHash = [ordered]@{}
-    $Target.psobject.Properties | ForEach-Object { $TargetHash[$_.Name] = $_.Value }
+        # clone target
+        $TargetHash = [ordered]@{}
+        $assignment.target.psobject.Properties |
+            ForEach-Object { $TargetHash[$_.Name] = $_.Value }
 
-    # Create hashtable for API call body
-    $hash = [ordered]@{ 
+        # apply filter
+        $TargetHash["deviceAndAppManagementAssignmentFilterId"]   = $FilterId
+        $TargetHash["deviceAndAppManagementAssignmentFilterType"] = $FilterMode
 
-        "@odata.type" = "#microsoft.graph.mobileAppAssignment"
-        "intent" = "Required"
-        "target" = $TargetHash
-        
-    } 
-
-    # If settings were returned with assignments, create settings hash and add it to hash
-    if($Settings){
-
-        $SettingsHash = [ordered]@{}
-        $Settings.psobject.Properties | ForEach-Object { $SettingsHash[$_.Name] = $_.Value }
-        $hash.Insert(2, 'settings', $SettingsHash)
-
-    }
-
-    $bodyAssignments = @{ "mobileAppAssignments" = @($Hash) } | ConvertTo-Json -Depth 5
-
-    # Post graph to assign filters to applications
-    try{
-        Write-Output "Assigning [$FilterMode] filter [$FilterName] to [$($app.displayName)]"
-        Write-Host $bodyAssignments -f Yellow -b Black # <<< this can be commented out after inspection.
-        
-        $URI = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/$AppId/assign"
-        #Invoke-RestMethod -Method Post -Uri $URI -Body $bodyAssignments -Headers $Headers -ContentType "application/json"
-        $s++
-        
-    }catch{
-            Write-Output "WARNING: App [$($app.displayName)] could not be patched with filter: $($_.Exception.Message)"
-            $f++
-    }
-    if($success){ $status = "OK" } else { $status = "Failed: $($_.Exception.Message)"  }
-    $report += [pscustomobject]@{
-                
-                AppName = $app.displayName
-                AppID   = $app.id
-                Status  = $status
+        # clone settings (if present)
+        $SettingsHash = $null
+        if ($assignment.settings) {
+            $SettingsHash = [ordered]@{}
+            $assignment.settings.psobject.Properties |
+                ForEach-Object { $SettingsHash[$_.Name] = $_.Value }
         }
+
+        # preserve intent + settings
+        $assignHash = [ordered]@{
+            "@odata.type" = "#microsoft.graph.mobileAppAssignment"
+            intent        = $assignment.intent     # PRESERVED
+            target        = $TargetHash            # UPDATED
+        }
+
+        if ($SettingsHash) {
+            $assignHash["settings"] = $SettingsHash
+        }
+
+        $UpdatedAssignments += $assignHash
+    }
+
+    # send full set
+    $Body = @{ mobileAppAssignments = $UpdatedAssignments } |
+        ConvertTo-Json -Depth 10
+
+    try {
+        Write-Output "Assigning filter to app: $($app.displayName)"
+        
+        # POST overwrite-all behaviour is required – but now safe
+        Invoke-RestMethod -Method POST -Uri "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/$AppID/assign" -Headers $Headers -Body $Body -ContentType "application/json"
+        $s++
+        $status = "OK"
+    }
+    catch {
+        $f++
+        $status = "Failed: $($_.Exception.Message)"
+    }
+
+    $report += [pscustomobject]@{
+        AppName = $app.displayName
+        AppID   = $AppID
+        Status  = $status
+    }
 }
 
-# ===== Display report to console =====
 $report | Format-Table -AutoSize
-Write-Output "Total Apps: $($report.Count) | Total Successful: $s | Total Failed: $f"
+Write-Output "Total Apps: $($report.Count) | Successful: $s | Failed: $f"
 
 # ===== End of script =====
