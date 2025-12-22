@@ -1,8 +1,8 @@
-﻿
 <#
 .SYNOPSIS
+    Author: Matt Balzan (mattGPT)
     Uploads or downloads Azure Blob Storage content using a SAS token.
-
+    
 .DESCRIPTION
     Uses Azure Blob Storage REST API to perform:
       - Upload operations (Put Blob)
@@ -115,3 +115,4 @@ function Invoke-BlobTransfer {
         throw
     }
 }
+
