@@ -24,7 +24,7 @@ $cutOff = 24
 # Filter for log files beginning with their start names - eg: ^Health|^App|^Agent|^Device
 $logFilters = "^AppWorkload|^Intune"
 
-# External log file path | change to C:\Windows\CCM\Logs on live machine ]
+# IME log file path
 $logs = Get-ChildItem -Path "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs"
 
 # Get only the filtered logs
@@ -78,3 +78,4 @@ foreach ($match in $matches) {
 }
 
 # End of script
+
