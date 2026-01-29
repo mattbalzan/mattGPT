@@ -25,8 +25,7 @@ $cutOff = 24
 $logFilters = "^AppWorkload|^Intune"
 
 # External log file path | change to C:\Windows\CCM\Logs on live machine ]
-#$logs = Get-ChildItem -Path "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs"
-$logs = Get-ChildItem -Path "C:\Users\v-mattbalzan\Downloads\SumeshLogs\Logs"
+$logs = Get-ChildItem -Path "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs"
 
 # Get only the filtered logs
 $logFiles = $logs | Where-Object { $_.Name -match $logFilters }
@@ -51,14 +50,13 @@ cls
 foreach ($match in $matches) {
     # Check if the message matches your keyword filter
     if ($match.Groups[1].Value -match $filter) {
-        
+       
         $message = $match.Groups[1].Value
         $time = $match.Groups[2].Value
         $date = $match.Groups[3].Value
         $comp = $match.Groups[4].Value
 
         try {
-
             if ($cutOff -gt 0){
                 $logDateTime = [datetime]"$date $time"
 
@@ -69,7 +67,6 @@ foreach ($match in $matches) {
                 }
             }
             else {
-                
                     Write-Host "$date $time | $comp | " -f DarkGray -NoNewline
                     Write-Host $message
             }
@@ -79,3 +76,5 @@ foreach ($match in $matches) {
         }
     }
 }
+
+# End of script
