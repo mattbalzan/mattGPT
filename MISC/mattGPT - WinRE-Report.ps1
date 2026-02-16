@@ -34,10 +34,10 @@ try {
     $report.OS_Version = $os.Version
     $report.OS_Build = [string]$os.BuildNumber
 
-    # 2. Get ReagentC Info (Out-String is critical here to prevent null array errors)
+    # 2. Get ReagentC info
     $reagentRaw = reagentc /info | Out-String
     
-    # Robust Regex Matching for Status and Path
+    # Regex Matching for Status and Path
     if ($reagentRaw -match "Windows RE status:\s+(?<status>\w+)") {
         $report.WinRE_Status = $Matches['status'].Trim()
     }
@@ -65,7 +65,7 @@ try {
                     if ($dismInfo -match "Version\s+:\s+(?<ver>.*)") { $report.WinRE_WIM_Version = $Matches['ver'].Trim() }
                     if ($dismInfo -match "ServicePack Build\s+:\s+(?<build>.*)") { $report.WinRE_WIM_Build = $Matches['build'].Trim() }
                     
-                    # Safe Date Extraction using Match Collection to avoid null index errors
+                    # Date Extraction
                     $dateRegex = '\d{1,2}/\d{1,2}/\d{4}'
                     $foundDates = [regex]::Matches($dismInfo, $dateRegex)
                     
@@ -102,4 +102,5 @@ $jsonOutput = $report | ConvertTo-Json -Compress
 Write-Output $jsonOutput
 
 # Intune Logic
+
 if ($report.Healthy_Match -eq "Yes") { exit 0 } else { exit 1 }
