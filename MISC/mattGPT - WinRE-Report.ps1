@@ -4,6 +4,8 @@
 
 .DESCRIPTION
 	Returns JSON for logs and Exit 1 if WinRE is disabled or mismatched.
+	It identifies the recovery partition, temporarily assigns it a drive letter (you can customise your own letter) if needed, 
+	pulls the internal build version of the Winre.wim file using DISM, and then cleans up after itself.
 
 .NOTES
     +------------+---------+---------+--------------------------------------------------------------------+
@@ -104,3 +106,4 @@ Write-Output $jsonOutput
 # Intune Logic
 
 if ($report.Healthy_Match -eq "Yes") { exit 0 } else { exit 1 }
+
