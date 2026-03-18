@@ -12,8 +12,7 @@
     The root directory to begin the inventory. 
 
 .EXAMPLE
-    .\InboxInventory.ps1
-    Runs the inventory on the hardcoded S:\ or C:\ path defined in the script.
+    Runs the inventory on the hardcoded path defined in the script.
 
 .NOTES
     +------------+---------+---------+--------------------------------------------------------------------+
