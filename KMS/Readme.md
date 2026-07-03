@@ -1,5 +1,8 @@
 # KMS Activation Monitoring Dashboard
 
+![Alt text](images/DemoHTML-1.png)
+![Alt text](images/DemoHTML-2.png) 
+
 A PowerShell-first KMS activation monitoring dashboard that runs directly on the KMS Host and exports:
 
 - `KMS_ActivationEvents.csv`
