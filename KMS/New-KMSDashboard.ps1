@@ -261,24 +261,30 @@ function Parse-KmsEvent {
 # Collect KMS events
 # -----------------------------
 
-try {
-    Write-Host "Collecting KMS events from '$KmsLogName' since $StartTime ..." -ForegroundColor Cyan
+Write-Host "Collecting KMS events from '$KmsLogName' since $StartTime ..." -ForegroundColor Cyan
 
-    $Events = Get-WinEvent -FilterHashtable @{
+# Confirm the KMS event log exists on this host before querying it.
+$KmsLog = Get-WinEvent -ListLog $KmsLogName -ErrorAction SilentlyContinue
+if (-not $KmsLog) {
+    Write-Host "This host does not appear to be a KMS Server - the '$KmsLogName' event log was not found." -ForegroundColor Yellow
+    Write-Host "Nothing to report. Exiting." -ForegroundColor Yellow
+    return
+}
+
+$Events = @()
+try {
+    $Events = @(Get-WinEvent -FilterHashtable @{
         LogName   = $KmsLogName
         StartTime = $StartTime
-    } -ErrorAction Stop
-
-    # Export raw event log as evidence
-    try {
-        wevtutil epl "$KmsLogName" "$RawEventExport" "/q:*[System[TimeCreated[timediff(@SystemTime) <= $($DaysBack * 24 * 60 * 60 * 1000)]]]" 2>$null
-    }
-    catch {
-        "Raw EVTX export failed: $($_.Exception.Message)" | Out-File -FilePath $FailurePath -Append -Encoding UTF8
-    }
+    } -ErrorAction Stop)
 }
-catch {
-    $Message = @"
+catch [System.Exception] {
+    # Get-WinEvent throws a terminating error when no matching events exist.
+    if ($_.Exception.Message -match "No events were found") {
+        $Events = @()
+    }
+    else {
+        $Message = @"
 Failed to read the '$KmsLogName' event log.
 
 Error:
@@ -286,9 +292,24 @@ $($_.Exception.Message)
 
 Confirm the script is running on the KMS Host as Administrator.
 "@
+        $Message | Out-File -FilePath $FailurePath -Encoding UTF8
+        Write-Host $Message -ForegroundColor Red
+        return
+    }
+}
 
-    $Message | Out-File -FilePath $FailurePath -Encoding UTF8
-    throw $Message
+if ($Events.Count -eq 0) {
+    Write-Host "No KMS activation events were found in '$KmsLogName' within the last $DaysBack days." -ForegroundColor Yellow
+    Write-Host "This is expected if the host is not a KMS Server or has not received recent client requests. Exiting." -ForegroundColor Yellow
+    return
+}
+
+# Export raw event log as evidence
+try {
+    wevtutil epl "$KmsLogName" "$RawEventExport" "/q:*[System[TimeCreated[timediff(@SystemTime) <= $($DaysBack * 24 * 60 * 60 * 1000)]]]" 2>$null
+}
+catch {
+    "Raw EVTX export failed: $($_.Exception.Message)" | Out-File -FilePath $FailurePath -Append -Encoding UTF8
 }
 
 $ParsedEvents = foreach ($Event in $Events) {

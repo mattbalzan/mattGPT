@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>KMS Activation Dashboard - Example</title>
+<style>
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f6f8fb;
+        color: #1f2937;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        background: linear-gradient(135deg, #1b4d89, #2563eb);
+        color: white;
+        padding: 28px 36px;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 650;
+    }
+
+    header p {
+        margin: 8px 0 0 0;
+        color: #dbeafe;
+    }
+
+    main {
+        padding: 24px 36px 42px 36px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    }
+
+    .card h2 {
+        margin: 0 0 12px 0;
+        font-size: 18px;
+        color: #111827;
+    }
+
+    .metricLabel {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 6px;
+    }
+
+    .metric {
+        font-size: 30px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .metricSmall {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 5px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+        font-size: 13px;
+    }
+
+    th {
+        text-align: left;
+        background: #eef2ff;
+        color: #1f2937;
+        border-bottom: 1px solid #c7d2fe;
+        padding: 8px;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    td {
+        border-bottom: 1px solid #edf2f7;
+        padding: 8px;
+        vertical-align: top;
+    }
+
+    tr:hover {
+        background: #f9fafb;
+    }
+
+    .tableWrap {
+        max-height: 520px;
+        overflow: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 650;
+    }
+
+    .ok {
+        color: #065f46;
+        background: #d1fae5;
+    }
+
+    .warning {
+        color: #92400e;
+        background: #fef3c7;
+    }
+
+    .critical {
+        color: #991b1b;
+        background: #fee2e2;
+    }
+
+    .warningRow {
+        background: #fffbeb;
+    }
+
+    .criticalRow {
+        background: #fef2f2;
+    }
+
+    .muted {
+        color: #6b7280;
+    }
+
+    .chart {
+        display: flex;
+        gap: 6px;
+        align-items: flex-end;
+        min-height: 190px;
+        overflow-x: auto;
+        padding: 12px 6px 4px 6px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fbfdff;
+    }
+
+    .barWrapper {
+        width: 28px;
+        text-align: center;
+        flex: 0 0 auto;
+    }
+
+    .bar {
+        width: 18px;
+        margin: 0 auto;
+        background: #2563eb;
+        border-radius: 6px 6px 0 0;
+    }
+
+    .barLabel {
+        font-size: 10px;
+        color: #6b7280;
+        transform: rotate(-45deg);
+        margin-top: 12px;
+        white-space: nowrap;
+    }
+
+    .twoCol {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .section {
+        margin-bottom: 18px;
+    }
+
+    footer {
+        padding: 18px 36px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>KMS Activation Monitoring Dashboard</h1>
+    <p>KMS Host: KMS-HOST01 | Generated: 2026-07-03 06:00:12 | Event window: last 180 days</p>
+</header>
+
+<main>
+    <section class="grid">
+        <div class="card">
+            <div class="metricLabel">Total KMS Events</div>
+            <div class="metric">1,482</div>
+            <div class="metricSmall">From 'Key Management Service'</div>
+        </div>
+        <div class="card">
+            <div class="metricLabel">Unique Devices / CMIDs</div>
+            <div class="metric">327</div>
+            <div class="metricSmall">Based on parsed client name or CMID</div>
+        </div>
+        <div class="card">
+            <div class="metricLabel">Products / Activation IDs</div>
+            <div class="metric">6</div>
+            <div class="metricSmall">Based on product or activation ID</div>
+        </div>
+        <div class="card">
+            <div class="metricLabel">At-Risk Devices</div>
+            <div class="metric">14</div>
+            <div class="metricSmall">Warning: 9 | Critical: 5</div>
+        </div>
+    </section>
+
+    <section class="twoCol">
+        <div class="card">
+            <h2>KMS Host Summary</h2>
+            <table>
+                <thead><tr>
+                    <th>KmsHost</th><th>ReportGenerated</th><th>DaysBack</th>
+                    <th>CurrentCountFromSlmgr</th><th>ListeningPortFromSlmgr</th>
+                    <th>HostLicenseStatus</th><th>HostDescription</th><th>HostPartialProductKey</th>
+                </tr></thead>
+                <tbody>
+                    <tr>
+                        <td>KMS-HOST01</td>
+                        <td>2026-07-03 06:00:12</td>
+                        <td>180</td>
+                        <td>327</td>
+                        <td>1688</td>
+                        <td>Licensed</td>
+                        <td>Windows(R) Operating System, VOLUME_KMS_channel</td>
+                        <td>WQ7TG</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card">
+            <h2>Activation Outcome Summary</h2>
+            <table>
+                <thead><tr>
+                    <th>SuccessEvents</th><th>NonSuccessEvents</th><th>LastEventTime</th><th>LastEventId</th>
+                </tr></thead>
+                <tbody>
+                    <tr>
+                        <td>1,451</td>
+                        <td>31</td>
+                        <td>2026-07-03 05:47:22</td>
+                        <td>12290</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card section">
+        <h2>Activation Request Trend by Day</h2>
+        <div class="chart">
+            <div class="barWrapper" title="2026-06-24: 38 requests"><div class="bar" style="height:76px;"></div><div class="barLabel">06-24</div></div>
+            <div class="barWrapper" title="2026-06-25: 52 requests"><div class="bar" style="height:104px;"></div><div class="barLabel">06-25</div></div>
+            <div class="barWrapper" title="2026-06-26: 47 requests"><div class="bar" style="height:94px;"></div><div class="barLabel">06-26</div></div>
+            <div class="barWrapper" title="2026-06-27: 61 requests"><div class="bar" style="height:122px;"></div><div class="barLabel">06-27</div></div>
+            <div class="barWrapper" title="2026-06-28: 24 requests"><div class="bar" style="height:48px;"></div><div class="barLabel">06-28</div></div>
+            <div class="barWrapper" title="2026-06-29: 80 requests"><div class="bar" style="height:160px;"></div><div class="barLabel">06-29</div></div>
+            <div class="barWrapper" title="2026-06-30: 73 requests"><div class="bar" style="height:146px;"></div><div class="barLabel">06-30</div></div>
+            <div class="barWrapper" title="2026-07-01: 69 requests"><div class="bar" style="height:138px;"></div><div class="barLabel">07-01</div></div>
+            <div class="barWrapper" title="2026-07-02: 58 requests"><div class="bar" style="height:116px;"></div><div class="barLabel">07-02</div></div>
+            <div class="barWrapper" title="2026-07-03: 41 requests"><div class="bar" style="height:82px;"></div><div class="barLabel">07-03</div></div>
+        </div>
+    </section>
+
+    <section class="card section">
+        <h2>Devices Not Seen Recently</h2>
+        <p class="muted">Warning threshold: 90 days. Critical threshold: 150 days.</p>
+        <div class="tableWrap">
+            <table>
+                <thead><tr>
+                    <th>DeviceOrCMID</th><th>LastSeen</th><th>DaysSinceSeen</th>
+                    <th>Health</th><th>RequestCount</th><th>LastProductName</th><th>LastResultCode</th>
+                </tr></thead>
+                <tbody>
+                    <tr class="criticalRow"><td>LAB-VM-0042</td><td>2025-12-18 09:12:44</td><td>197.4</td><td><span class="badge critical">Critical</span></td><td>3</td><td>Windows 11 Enterprise</td><td>0x0</td></tr>
+                    <tr class="criticalRow"><td>FIELD-LT-118</td><td>2026-01-02 14:33:10</td><td>182.2</td><td><span class="badge critical">Critical</span></td><td>2</td><td>Windows 11 Enterprise</td><td>0x0</td></tr>
+                    <tr class="criticalRow"><td>WKS-REMOTE-77</td><td>2026-01-15 08:05:51</td><td>169.4</td><td><span class="badge critical">Critical</span></td><td>5</td><td>Office 21, ProPlus2021VL_KMS_Client</td><td>0x0</td></tr>
+                    <tr class="criticalRow"><td>BB0C2A11-4F7D-4E2A-9C0B-1F2E3D4C5B6A</td><td>2026-01-20 22:41:09</td><td>163.8</td><td><span class="badge critical">Critical</span></td><td>1</td><td>Windows 10 Enterprise</td><td>0x0</td></tr>
+                    <tr class="criticalRow"><td>DEPOT-KIOSK-05</td><td>2026-01-28 11:19:37</td><td>156.3</td><td><span class="badge critical">Critical</span></td><td>4</td><td>Windows 11 Enterprise</td><td>0x0</td></tr>
+                    <tr class="warningRow"><td>SALES-LT-204</td><td>2026-03-14 07:58:02</td><td>111.5</td><td><span class="badge warning">Warning</span></td><td>6</td><td>Office 21, ProPlus2021VL_KMS_Client</td><td>0x0</td></tr>
+                    <tr class="warningRow"><td>ENG-WS-091</td><td>2026-03-22 16:44:28</td><td>103.1</td><td><span class="badge warning">Warning</span></td><td>8</td><td>Windows 11 Enterprise</td><td>0x0</td></tr>
+                    <tr class="warningRow"><td>HR-LT-013</td><td>2026-03-30 10:02:15</td><td>95.4</td><td><span class="badge warning">Warning</span></td><td>3</td><td>Windows 11 Enterprise</td><td>0x0</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card section">
+        <h2>Top Devices by Activation Requests</h2>
+        <div class="tableWrap">
+            <table>
+                <thead><tr>
+                    <th>DeviceOrCMID</th><th>RequestCount</th><th>LastSeen</th><th>DaysSinceSeen</th>
+                    <th>Health</th><th>LastProductName</th><th>LastResultCode</th><th>LastSuccess</th>
+                </tr></thead>
+                <tbody>
+                    <tr><td>CONF-ROOM-PC01</td><td>42</td><td>2026-07-03 05:47:22</td><td>0.0</td><td><span class="badge ok">OK</span></td><td>Windows 11 Enterprise</td><td>0x0</td><td>True</td></tr>
+                    <tr><td>FINANCE-WS-007</td><td>29</td><td>2026-07-02 18:22:41</td><td>0.5</td><td><span class="badge ok">OK</span></td><td>Office 21, ProPlus2021VL_KMS_Client</td><td>0x0</td><td>True</td></tr>
+                    <tr><td>IT-ADMIN-PC03</td><td>27</td><td>2026-07-03 04:11:08</td><td>0.1</td><td><span class="badge ok">OK</span></td><td>Windows 11 Enterprise</td><td>0x0</td><td>True</td></tr>
+                    <tr><td>ENG-WS-091</td><td>8</td><td>2026-03-22 16:44:28</td><td>103.1</td><td><span class="badge warning">Warning</span></td><td>Windows 11 Enterprise</td><td>0x0</td><td>True</td></tr>
+                    <tr><td>SALES-LT-204</td><td>6</td><td>2026-03-14 07:58:02</td><td>111.5</td><td><span class="badge warning">Warning</span></td><td>Office 21, ProPlus2021VL_KMS_Client</td><td>0x0</td><td>True</td></tr>
+                    <tr><td>WKS-REMOTE-77</td><td>5</td><td>2026-01-15 08:05:51</td><td>169.4</td><td><span class="badge critical">Critical</span></td><td>Office 21, ProPlus2021VL_KMS_Client</td><td>0x0</td><td>True</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card section">
+        <h2>Product / Activation ID Summary</h2>
+        <div class="tableWrap">
+            <table>
+                <thead><tr>
+                    <th>ProductOrActivationId</th><th>RequestCount</th><th>LastSeen</th><th>SuccessCount</th><th>FailureCount</th>
+                </tr></thead>
+                <tbody>
+                    <tr><td>Windows 11 Enterprise</td><td>712</td><td>2026-07-03 05:47:22</td><td>701</td><td>11</td></tr>
+                    <tr><td>Windows 10 Enterprise</td><td>388</td><td>2026-07-02 21:14:03</td><td>380</td><td>8</td></tr>
+                    <tr><td>Office 21, ProPlus2021VL_KMS_Client</td><td>241</td><td>2026-07-03 03:52:47</td><td>236</td><td>5</td></tr>
+                    <tr><td>Windows Server 2022 Datacenter</td><td>86</td><td>2026-07-01 12:08:19</td><td>84</td><td>2</td></tr>
+                    <tr><td>Office 19, ProPlus2019VL_KMS_Client</td><td>39</td><td>2026-06-28 09:41:55</td><td>36</td><td>3</td></tr>
+                    <tr><td>ActivationId: 5f7b0862-3f0b-4d31-9b0f-2c8a1d9e6b44</td><td>16</td><td>2026-06-30 15:27:31</td><td>14</td><td>2</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card section">
+        <h2>Recent KMS Events</h2>
+        <div class="tableWrap">
+            <table>
+                <thead><tr>
+                    <th>TimeCreated</th><th>EventId</th><th>ClientName</th><th>CMID</th><th>ProductName</th>
+                    <th>ActivationId</th><th>ResultCode</th><th>Success</th><th>LicenseStatus</th><th>KmsCurrentCount</th>
+                </tr></thead>
+                <tbody>
+                    <tr><td>2026-07-03 05:47:22</td><td>12290</td><td>CONF-ROOM-PC01</td><td>1A2B3C4D-5E6F-7081-92A3-B4C5D6E7F809</td><td>Windows 11 Enterprise</td><td>de4ba03d-3a4c-4be8-a3 e4-2c8f0e4d1b7a</td><td>0x0</td><td>True</td><td>Licensed</td><td>327</td></tr>
+                    <tr><td>2026-07-03 04:11:08</td><td>12290</td><td>IT-ADMIN-PC03</td><td>2B3C4D5E-6F70-8192-A3B4-C5D6E7F80912</td><td>Windows 11 Enterprise</td><td>de4ba03d-3a4c-4be8-a3e4-2c8f0e4d1b7a</td><td>0x0</td><td>True</td><td>Licensed</td><td>326</td></tr>
+                    <tr><td>2026-07-03 03:52:47</td><td>12290</td><td>FINANCE-WS-007</td><td>3C4D5E6F-7081-92A3-B4C5-D6E7F8091234</td><td>Office 21, ProPlus2021VL_KMS_Client</td><td>5f7b0862-3f0b-4d31-9b0f-2c8a1d9e6b44</td><td>0x0</td><td>True</td><td>Licensed</td><td>325</td></tr>
+                    <tr><td>2026-07-02 21:14:03</td><td>12290</td><td>DEV-SRV-014</td><td>4D5E6F70-8192-A3B4-C5D6-E7F809123456</td><td>Windows 10 Enterprise</td><td>73111121-5638-40f6-bc11-f1d7b0d64300</td><td>0x0</td><td>True</td><td>Licensed</td><td>324</td></tr>
+                    <tr><td>2026-07-02 18:22:41</td><td>12290</td><td>MFG-KIOSK-22</td><td>5E6F7081-92A3-B4C5-D6E7-F80912345678</td><td>Windows 11 Enterprise</td><td>de4ba03d-3a4c-4be8-a3e4-2c8f0e4d1b7a</td><td>0xC004F074</td><td>False</td><td>Notification</td><td>323</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card section">
+        <h2>Generated Files</h2>
+        <table>
+            <tr><th>File</th><th>Path</th></tr>
+            <tr><td>Event CSV</td><td>C:\Temp\KMSDashboard\KMS_ActivationEvents.csv</td></tr>
+            <tr><td>Device Last Seen CSV</td><td>C:\Temp\KMSDashboard\KMS_DeviceLastSeen.csv</td></tr>
+            <tr><td>Product Summary CSV</td><td>C:\Temp\KMSDashboard\KMS_ProductSummary.csv</td></tr>
+            <tr><td>Raw EVTX Export</td><td>C:\Temp\KMSDashboard\KMS_RawEvents.evtx</td></tr>
+            <tr><td>HTML Dashboard</td><td>C:\Temp\KMSDashboard\KMS_Dashboard.html</td></tr>
+        </table>
+    </section>
+</main>
+
+<footer>
+    Dashboard generated locally from the KMS Host event log. Parsing depends on fields present in the event message for the installed Windows / Office activation components.
+    <br /><strong>This is an EXAMPLE report containing fictitious sample data for illustration only.</strong>
+</footer>
+</body>
+</html>
