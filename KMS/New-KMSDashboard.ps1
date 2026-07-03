@@ -15,7 +15,7 @@
         - Event trend by day
 
 .NOTES
-    Author: Matt-friendly Copilot version
+    Author: Matt Balzan - MSFT CSA (mattGPT)
     PowerShell: 5.1+
     Run as Administrator on the KMS Host.
 
@@ -23,18 +23,28 @@
       - KMS host event ID 12290 records requests from KMS clients.
       - KMS client event IDs 12288/12289 relate to request/response processing.
       - KMS activation logging is stored in the Key Management Service event log.
+
+.DISCLAIMER
+    This sample script is not supported under any Microsoft standard support
+    program or service. This script is provided AS IS without warranty of any
+    kind. Microsoft further disclaims all implied warranties including, without
+    limitation, any implied warranties of merchantability or of fitness for a
+    particular purpose. The entire risk arising out of the use or performance of
+    this script and documentation remains with you. In no event shall Microsoft,
+    its authors, or anyone else involved in the creation, production, or delivery
+    of this script be liable for any damages whatsoever (including, without
+    limitation, damages for loss of business profits, business interruption, loss
+    of business information, or other pecuniary loss) arising out of the use of or
+    inability to use this script or documentation, even if Microsoft has been
+    advised of the possibility of such damages.
 #>
 
 [CmdletBinding()]
 param(
     [string]$OutputPath = "C:\Temp\KMSDashboard",
-
     [int]$DaysBack = 180,
-
     [int]$WarningDays = 90,
-
     [int]$CriticalDays = 150,
-
     [string]$KmsLogName = "Key Management Service"
 )
 
@@ -84,7 +94,7 @@ function Get-RegexValue {
     )
 
     foreach ($Pattern in $Patterns) {
-        $Match = [regex\]::Match($Text, $Pattern, [System.Text.RegularExpressions.RegexOptions\]::IgnoreCase)
+        $Match = [regex]::Match($Text, $Pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
         if ($Match.Success -and $Match.Groups.Count -gt 1) {
             return ($Match.Groups[1].Value.Trim())
         }
@@ -100,7 +110,7 @@ function ConvertTo-SafeHtml {
         return ""
     }
 
-    return [System.Net.WebUtility\]::HtmlEncode($Text)
+    return [System.Net.WebUtility]::HtmlEncode($Text)
 }
 
 function Get-KmsHostDlv {
@@ -311,7 +321,7 @@ $DeviceSummary =
         $Rows = $_.Group
         $Last = $Rows | Sort-Object TimeCreated -Descending | Select-Object -First 1
         $First = $Rows | Sort-Object TimeCreated | Select-Object -First 1
-        $DaysSinceSeen = [math\]::Round(($Now - $Last.TimeCreated).TotalDays, 1)
+        $DaysSinceSeen = [math]::Round(($Now - $Last.TimeCreated).TotalDays, 1)
 
         $Health =
             if ($DaysSinceSeen -ge $CriticalDays) { "Critical" }
@@ -466,7 +476,7 @@ function New-BarChartHtml {
     $Html = "<div class='chart'>"
 
     foreach ($Point in $Trend) {
-        $Height = [math\]::Max(4, [math\]::Round(($Point.Requests / $Max) * 160))
+        $Height = [math]::Max(4, [math]::Round(($Point.Requests / $Max) * 160))
         $Title = "$($Point.Date): $($Point.Requests) requests"
         $Html += @"
 <div class="barWrapper" title="$(ConvertTo-SafeHtml $Title)">
@@ -848,7 +858,8 @@ $Css
 "@
 
 $Html | Out-File -FilePath $HtmlPath -Encoding UTF8
-board generated successfully." -ForegroundColor Green
+
+Write-Host "KMS dashboard generated successfully." -ForegroundColor Green
 Write-Host "HTML : $HtmlPath" -ForegroundColor Cyan
 Write-Host "CSV  : $EventCsvPath" -ForegroundColor Cyan
 Write-Host "CSV  : $DeviceCsvPath" -ForegroundColor Cyan
