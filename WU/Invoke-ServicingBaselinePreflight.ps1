@@ -117,9 +117,26 @@
     Log destination. Defaults to the TS log folder when in a task sequence, else
     C:\Windows\Temp.
 
+.PARAMETER IntuneDetection
+    Emit a flat JSON object on STDOUT formatted for Intune, and suppress all other host
+    output so the pipeline stays clean for the Intune agent to parse. The payload reports
+    the upgrade-readiness gate:
+
+        { "CanUpgrade": <Boolean> }
+
+    Standalone exit codes are overridden for the Intune convention: exit 0 when
+    CanUpgrade = True (compliant / no remediation), exit 1 when CanUpgrade = False
+    (non-compliant / needs remediation). Suitable for a Proactive Remediation detection
+    script, or as a Win32 app / Custom Compliance detection source. Runs detection only
+    unless repair switches are also supplied.
+
 .EXAMPLE
     # Detection only - safe to run estate-wide
     .\Invoke-ServicingBaselinePreflight.ps1 -SkipRepair -Verbose
+
+.EXAMPLE
+    # Intune Proactive Remediation detection script - clean JSON on STDOUT
+    .\Invoke-ServicingBaselinePreflight.ps1 -IntuneDetection -SkipRepair
 
 .EXAMPLE
     # Single device: try Windows Update, fall back to local media
@@ -140,6 +157,9 @@
 .OUTPUTS
     A PSCustomObject summarising the run, plus CSV/JSON in $LogPath.
 
+    With -IntuneDetection, a compact flat JSON object on STDOUT for the Intune agent:
+        { "CanUpgrade": <Boolean> }
+
     Task sequence variables (when running in a TS):
         PFBucket           A|B|Z
         PFDefectFound      True|False
@@ -158,13 +178,33 @@
        20  Not elevated
 
 .NOTES
+    +------------+---------+---------+--------------------------------------------------------------------+
+    | Date       | Author  | Version | Changes                                                            |
+    |------------+---------+---------+--------------------------------------------------------------------|
+    | 2026-07-27 | mattGPT | 1.0     | Initial script.                                                    |
+    | 2026-07-27 | mattGPT | 1.1     | Added -IntuneDetection switch to emit Intune detection output.     |
+    +------------+---------+---------+--------------------------------------------------------------------+
+
     Requires: PowerShell 5.1+, elevated (SYSTEM is fine). No external modules.
-    Licence: MIT. Provided as-is - test before production use.
 
     Tier 1 modifies update-source policy temporarily. It backs up every value it touches,
     restores them in the exit path even on early failure, and triggers a machine policy
     refresh afterwards. Review Set-RepairPolicy / Restore-RepairPolicy before deploying
     in a regulated environment.
+
+.DISCLAIMER
+    This sample script is not supported under any Microsoft standard support
+    program or service. This script is provided AS IS without warranty of any
+    kind. Microsoft further disclaims all implied warranties including, without
+    limitation, any implied warranties of merchantability or of fitness for a
+    particular purpose. The entire risk arising out of the use or performance of
+    this script and documentation remains with you. In no event shall Microsoft,
+    its authors, or anyone else involved in the creation, production, or delivery
+    of this script be liable for any damages whatsoever (including, without
+    limitation, damages for loss of business profits, business interruption, loss
+    of business information, or other pecuniary loss) arising out of the use of or
+    inability to use this script or documentation, even if Microsoft has been
+    advised of the possibility of such damages.
 #>
 
 [CmdletBinding()]
@@ -184,6 +224,7 @@ param(
     [switch]   $SkipRepair,
     [switch]   $RemoveBlockingDrivers,
     [switch]   $SuspendBitLocker,
+    [switch]   $IntuneDetection,
     [string]   $LogPath
 )
 
@@ -211,10 +252,13 @@ $logFile = Join-Path $LogPath 'ServicingPreflight.log'
 function Write-Log {
     param([string]$Message,[ValidateSet('INFO','WARN','ERROR')][string]$Level='INFO')
     $line = '{0} [{1}] {2}' -f (Get-Date -f 'yyyy-MM-dd HH:mm:ss'), $Level, $Message
-    switch ($Level) {
-        'WARN'  { Write-Host $line -ForegroundColor Yellow }
-        'ERROR' { Write-Host $line -ForegroundColor Red }
-        default { Write-Host $line }
+    # In Intune detection mode keep STDOUT clean for the agent - log to file only.
+    if (-not $IntuneDetection) {
+        switch ($Level) {
+            'WARN'  { Write-Host $line -ForegroundColor Yellow }
+            'ERROR' { Write-Host $line -ForegroundColor Red }
+            default { Write-Host $line }
+        }
     }
     try { Add-Content -Path $logFile -Value $line -Encoding UTF8 } catch { }
 }
@@ -296,6 +340,15 @@ function Complete-Preflight {
     } catch { Write-Log "Could not write result files: $($_.Exception.Message)" WARN }
 
     Write-Log "COMPLETE - Bucket=$($result.Bucket) Tier=$($result.RepairTier) Result=$($result.RepairResult) CanUpgrade=$($result.CanUpgrade)"
+
+    # Intune detection: emit a clean flat JSON payload and map the readiness gate to the
+    # Intune exit-code convention (0 = compliant, 1 = remediate). Nothing else on STDOUT.
+    if ($IntuneDetection) {
+        $canUpgrade = [bool]$result.CanUpgrade
+        ([ordered]@{ CanUpgrade = $canUpgrade } | ConvertTo-Json -Compress)
+        if ($tsEnv) { exit 0 } else { exit ([int](-not $canUpgrade)) }
+    }
+
     $obj | Format-List
 
     # Inside a TS always exit 0 - flow is controlled by step conditions on the variables

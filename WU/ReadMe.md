@@ -81,6 +81,13 @@ Both tiers go through the same verification: are the named component directories
 
 Add a **Download Package Content** step before it, with *Save path as a variable* set to `RepairSrc` — ConfigMgr creates `RepairSrc01`. Gate your Upgrade OS step on `PFCanUpgrade equals True`.
 
+**Intune detection output — clean JSON on STDOUT for a Proactive Remediation detection script:**
+```powershell
+.\Invoke-ServicingBaselinePreflight.ps1 -IntuneDetection -SkipRepair
+```
+
+`-IntuneDetection` suppresses all host output and emits a single flat JSON object — `{ "CanUpgrade": <Boolean> }` — then maps the readiness gate to the Intune exit-code convention: `0` when `CanUpgrade` is `True` (compliant), `1` when `False` (remediate). Use it as an Intune Proactive Remediation detection script, a Win32 app detection source, or a Custom Compliance input.
+
 ### Key parameters
 
 | Parameter | Default | Purpose |
@@ -95,10 +102,19 @@ Add a **Download Package Content** step before it, with *Save path as a variable
 | `-SkipRepair` | off | Detection only |
 | `-RemoveBlockingDrivers` | off | Remove `BlockMigration=True` and unsigned `oem*.inf` |
 | `-SuspendBitLocker` | off | Suspend for 3 reboots when a PIN protector is present |
+| `-IntuneDetection` | off | Emit clean `{ "CanUpgrade": <Boolean> }` JSON on STDOUT and exit `0`/`1` for Intune |
 
 ### Output
 
 Writes CSV and JSON to `$LogPath` (defaults to `C:\Windows\Temp`, or the TS log folder inside a task sequence), plus a human-readable `ServicingPreflight.log`. Full DISM output lands in `dism-wu.log` / `dism-wim.log` alongside it.
+
+With `-IntuneDetection`, all host output is suppressed and a single compact JSON object is written to STDOUT for the Intune agent to parse:
+
+```json
+{ "CanUpgrade": true }
+```
+
+Standalone exit codes are overridden to the Intune convention in this mode: `0` = compliant (`CanUpgrade` True), `1` = remediate (`CanUpgrade` False).
 
 **Task sequence variables:**
 
@@ -151,4 +167,4 @@ The script backs up every value it touches, restores them in the exit path even 
 
 ### Licence
 
-MIT. Provided as-is, with no warranty. Test before production use.
+MIT. This sample script is not supported under any Microsoft standard support program or service, and is provided AS IS without warranty of any kind. Test before production use.
