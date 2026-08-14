@@ -1,4 +1,4 @@
-# Clauses & Chaos — App Launch Counts
+# App Launch Counts
 
 `Get-AppLaunchCounts.ps1` is an Intune **detection** script that reports how many times a curated list of applications has been launched by the logged-on user(s) on a device, along with the **last launch date/time** of each app.
 
