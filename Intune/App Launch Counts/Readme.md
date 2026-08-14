@@ -49,7 +49,7 @@ Leave the list empty (`$SelectApps = @()`) to report **every** launched executab
 
 ## Example output
 
-<img width="1169" height="71" alt="image" src="https://github.com/user-attachments/assets/d81ba8ac-e1b3-4679-a982-348df01686c5" />
+![Diagram](./images/example.png)
 
 
 ## Intune configuration
