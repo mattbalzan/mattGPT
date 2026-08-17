@@ -1,0 +1,281 @@
+	<!DOCTYPE html>
+	<html class="theme-light">
+	  <head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>PAW Build Help Docs</title>
+		<style type="text/css">
+	
+			.theme-light {
+				--color-primary: #ffffff;
+				--color-secondary: #eee;
+				--color-tdth: #ddd;
+				--color-trnth:#f2f2f2;
+				--color-trhover: #ddd;
+				--font-color: #000000;
+				--subtitle: #000000;
+			}
+	
+			.theme-dark {
+				--color-primary: #232B32;
+				--color-secondary: #000;
+				--color-accent: #12cdea;
+				--color-tdth: rgb(100, 100, 100);
+				--color-trnth:#234250;
+				--color-trhover: rgb(20, 20, 20);
+				--font-color: #ffffff;
+				--subtitle: #0099ff;
+			}
+			
+			h1 { color: var(--subtitle);}
+		
+		body{
+		  margin: 0;
+		  padding: 0;
+		  overflow: hidden;
+		  height: 100%; 
+		  max-height: 100%; 
+		  font-family:'Segoe UI';
+		  line-height: 1.5em;
+				font-size: 14px;
+		}
+		
+		#nav{
+		  position: absolute;
+		  top: 0;
+		  bottom: 0; 
+		  left: 0;
+		  width: 280px; /* Width of navigation frame */
+		  height: 100%;
+		  overflow: hidden; /* Disables scrollbars on the navigation frame. To enable scrollbars, change "hidden" to "scroll" */
+		  background: var(--color-secondary);
+				color: var(--font-color);
+		}
+		
+		main{
+		  position: fixed;
+		  top: 0; 
+		  left: 280px; /* Set this to the width of the navigation frame */
+		  right: 0;
+		  bottom: 0;
+		  overflow: auto; 
+		  background: var(--color-primary);
+				color: var(--font-color);
+		}
+		
+		.innertube{
+		  margin: 20px; /* Provides padding for the content */
+		}
+		
+		nav ul {
+		  list-style-type: square;
+		  margin: 5;
+		  padding: 0;
+				text-decoration: none;
+				font-size: 12px;
+				color:var(--font-color);
+		}
+		
+			a {
+				text-decoration: none;
+				color:var(--font-color);
+	
+			}
+	
+			a:visited {
+				text-decoration: none;
+				color:var(--font-color);
+			}
+			
+			a:hover {
+				text-decoration: underline;
+			}
+			
+		/*IE6 fix*/
+		* html body{
+		  padding: 0 0 0 230px; /* Set the last value to the width of the navigation frame */
+		}
+		
+		* html main{ 
+		  height: 100%; 
+		  width: 100%; 
+		}
+	
+			td,th {
+				border: 1px solid var(--color-tdth);
+				padding: 8px;
+			}
+	
+			tr:nth-child(even){background-color: var(--color-trnth);}
+	
+			tr:hover {background-color: var(--color-trhover);}
+			
+			ul {
+			  list-style-type: square;
+  
+			}
+	
+		</style>
+			<script>
+				// function to set a given theme/color-scheme
+					function setTheme(themeName) {
+						localStorage.setItem('theme', themeName);
+							document.documentElement.className = themeName;
+					}
+				// function to toggle between light and dark theme
+					function toggleTheme() {
+						if (localStorage.getItem('theme') === 'theme-dark') {
+						setTheme('theme-light');
+						} else {
+						setTheme('theme-dark');
+						}
+					}
+				// Immediately invoked function to set the theme on initial load
+					(function () {
+						if (localStorage.getItem('theme') === 'theme-dark') {
+						setTheme('theme-dark');
+						} else {
+						setTheme('theme-light');
+						}
+					})();    
+			</script>
+    	  </head>
+	  <body>		
+	  <main>
+	  <br id="Top">
+  <div class="innertube">
+  <h1>PAW Build Help Guide</h1>
+		  <br>
+		  <article>
+					<h1 id="PAWwhat">What is a PAW?</h1>
+					<p>A Priviliged Access Workstation (or PAW) is a device with a dedicated operating system used for the sole purpose of secure access to privileged resources.</p>
+					<p>This is the highest security configuration designed for extremely sensitive roles that would have a signficant or material impact on the organization if their account was compromised.</p>
+				  <br>
+					<h1 id="WhatAns">What is an Answer file?</h1>
+					<p>The answer (or Autounattend.xml) file is a configuration xml file which contains all the predetermined settings for a Windows Setup.</p>
+					<p>The purpose of this file is to automate as much as possible the setup without manual intervention or human error/typos.</p>
+					<p>In order to setup an answer file, you would normally download the ADKSetup binaries from the MSFT site and then install the Windows System Image Manager.</p>
+					<p>However, using the SIM requires some technical skill and is time consuming. The PAW GUI removes these burdens and lets you select various settings only needed for the PAW build.</p>
+					<br>
+					<h1 id="PAWreq">What are the PAW creation requirements?</h1>
+					<p>To run the PAW Creator UI, you will need the following:</p>
+						<ul>
+						<li>a physical device which will become the PAW</li>
+						<li>a technician device running Windows 10 or 11 with 8GB RAM and the Hyper-V Feature enabled</li>
+						<li>a USB disk with minimum 8GB and maximum 32GB of disk space</li>
+						<li>a clean source downloaded ISO file of the OS you wish to build</li>
+						<li>this PAW GUI PowerShell script</li>
+						<li>a copy of the Bootstrap-Build.zip</li>
+						<li>optional: drivers for the PAW device</li>
+					  </ul>
+				  <br>
+					  <h1 id="PAWreq2">Before you run the PAW script!</h1>
+				  <p>Before you can run the <b>PAW Creator</b> script, make sure you do the following tasks:</p>
+				  <p>
+					  1. Create a folder on the technician device (eg. C:\Source)
+				  <p>
+					  2. Within this folder create <b>5</b> subfolders as shown in the list below:
+				  <p>
+					  <ul>
+					  <li>AutoPilot</li>
+					  <li>ISO</li>
+					  <li>Drivers</li>
+					  <li>SSU</li>
+					  <li>Updates</li>
+					</ul>
+				<p>
+					3. Download the latest Windows 10 or 11 iso from Microsoft Volume Licensing site and place it in the <b>ISO</b> folder.
+				<p>
+					4. Download any security or SSU updates and place them in the <b>Updates</b> or <b>SSU</b> folder (strongly recommended!).
+				<p>
+					5. If using an Autopilot config file, place it in the <b>Autopilot</b> folder.
+				<p>				  		
+					6. Expand any drivers in the <b>Drivers</b> folder (optional).
+				<p>						
+					7. Copy the <b>PAW Creator script</b>, the <b>Bootstrap-Build.zip</b> and <b>DefaultConfig.ini</b> files into the main folder of step 1.
+				<p>	
+					8. Run the <b>PAW Creator script</b> from the main folder you just created in step 1.
+				<br>
+				<br>				  
+				  <h1 id="HowUSB">How to create a PAW</h1>
+					  <p>1. Launch the PAW GUI script as Admin and make sure you select the following:</p>
+					  <p>
+						  <table>
+							  <tr><td>OS EDITION:</td><td><b>Enterprise</b> | <b>Professional</b> (click the button to choose one)</td></tr>
+							  <tr><td>PAW TYPE:</td><td><b>Bootstrap</b> | <b>Cloud</b> (click the button to choose one)</td></tr>
+							  <tr><td>ISO SETUP LANGUAGE:</td><td>Choose from 35 languages (please select the language your ISO file was downloaded as)</td></tr>
+							  <tr><td>TIME ZONE:</td><td>Choose a time zone</td></tr>
+							  <tr><td>SOURCE FILES LOCATION:</td><td>Click this button to choose the folder where your ISO installer is (file extension: <b>.iso</b>)</td></tr>
+							  <tr><td>BUILD FILES PATH:</td><td>Type in this field where the <b>Bootsrap-Build.zip</b> files are located</td></tr>
+						  </table>
+				  <br>
+					  <p>2. Click the <b>[CREATE PAW]</b> button. Let the script run and wait till it prompts you to insert the USB drive.</p>
+					  <p>3. Once you select your USB drive, click <b>OK</b>.</p>
+					  <p>4. The USB drive will be formatted and all the contents of the ISO and the autounattend file will be copied to it.</p>
+					  <p> Once the script has completed, you may add another USB or cancel. Insert the USB drive into the PAW device and press <b>F12</b> to boot from the USB drive to start building it.</p>
+				  <br>
+				  <h1 id="TestAns">How to create New Answer files</h1>
+					  <p>1. Launch the PAW GUI script in an elevated PowerShell console and make sure you select the following:</p>
+				  <p>
+					  <table>
+						  <tr><td>PAW TYPE:</td><td><b>Bootstrap</b> | <b>Cloud</b> (click the button to choose one)</td></tr>
+						  <tr><td>ISO SETUP LANGUAGE:</td><td>Choose from 35 languages (please select the language your ISO file was downloaded as)</td></tr>
+						  <tr><td>TIME ZONE:</td><td>Choose a time zone</td></tr>
+					  </table>
+				  <br>
+					  <p>2. Click the <b>[NEW ANSWER FILE]</b> button.</p>
+					  <p>3. An autounattend file will be created in the <b>Bootstrap-Build</b> folder.</p>
+				  <br>
+				  <h1 id="HowISO">How to create a Test PAW VM</h1>
+				  <p>1. Launch the PAW GUI script in an elevated PowerShell console.</p>
+				  <p>2. Click the <b>[CREATE TEST VM]</b> button.</p>
+				  <p>3. Wait for the VM to popup and auto boot.</p>
+				  <p>4. Once the build is finished, login with the PAW user account and test.</p>
+				  <p>5. When you are finished testing the VM, you can delete it by clicking on the PAW toolbar button: REMOVE VM</p>
+			  <br>
+				  <h1 id="HowTOOL">How to use the PAW Toolbar</h1>
+				  <P>The toolbar contains the following buttons:
+				  <p>
+				  <table>
+				  <tr><td>TOGGLE THEME</td><td>This option is used to change the theme from Dark to Light and vice versa.</td></tr>
+				  <tr><td>SHOW LOG</td><td>This option (only upon script completion!), will display the log file located in the <B>ISO-Temp</B> folder.</td></tr>
+				  <tr><td>REMOVE VM</td><td>This option can be used to delete any virtual machines created using the <B>CREATE TEST VM</B> button.</td></tr>
+				  <tr><td>HELP DOCS</td><td>This option displays the built-in help documentation via the Edge browser.</td></tr>
+				  </table>
+				<p>
+			  <br>
+				  <h1 id="Gloss">Glossary</h1>
+				  <table>
+					  <tr><td>PAW</td><td>Priviliged Access Workstation</td></tr>
+					  <tr><td>GUI</td><td>Graphical User Interface</td></tr>
+					  <tr><td>USB</td><td>Universal Serial Bus</td></tr>
+					  <tr><td>ISO</td><td>An ISO file is an exact copy of an entire optical disk such as a CD, DVD, or Blu-ray archived into a single file</td></tr>
+					  <tr><td>OS</td><td>Operating System</td></tr>
+					  <tr><td>RAM</td><td>Random Access Memory</td></tr>
+					  <tr><td>XML</td><td>eXtended Markup Language</td></tr>
+					  <tr><td>ANSWER or AUTOUNATTEND</td><td>XML configuration file to automate Windows Setup</td></tr>
+				  </table>
+			  </article>
+  <p></p>
+	  </div>
+  </main>    
+		<nav id="nav">
+		  <div class="innertube">
+				<div><center><img src="$logo" alt="PAW logo"></center></div>
+		  <h3>INDEX</h3>
+		  <ul>
+			  <li><a href="#PAWwhat">What is a PAW?</a></li>
+			  <li><a href="#PAWreq">What are the PAW creation requirements?</a></li>
+			  <li><a href="#PAWreq2">Before you run the PAW script</a></li>
+			  <li><a href="#WhatAns">What is an Answer file?</a></li>
+			  <li><a href="#HowUSB">How to create a PAW</a></li>
+			  <li><a href="#TestAns">How to create additional Answer files</a></li>
+			  <li><a href="#HowISO">How to create a Test PAW VM</a></li>
+			  <li><a href="#HowTOOL">How to use the PAW Toolbar</a></li>
+			  <li><a href="#Gloss">Glossary</a></li>
+		  </ul>
+				<p></p>
+				<center><a href="#Top">GO TO TOP</a>&emsp;|&emsp;<a href="#" onclick="toggleTheme()">TOGGLE THEME</a></center>
+		  </div>
+		</nav>
+	  </body>
+	</html>
